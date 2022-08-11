@@ -29,7 +29,7 @@ def download_picture(filename):
 
 
 def get_request_vk(vk_method, params):
-    url =f'https://api.vk.com/method/{vk_method}'
+    url = f'https://api.vk.com/method/{vk_method}'
     response = requests.get(url, params=params)
     response.raise_for_status()
     return response.json()
@@ -37,14 +37,16 @@ def get_request_vk(vk_method, params):
 
 def get_upload_url_vk(vk_access_token, vk_api_version):
     vk_method = 'photos.getWallUploadServer'
-    params ={'access_token': vk_access_token,
-             'v': vk_api_version}
+    params = {
+        'access_token': vk_access_token,
+        'v': vk_api_version
+        }
     vk_upload_url = get_request_vk(vk_method, params)['response']['upload_url']
     return vk_upload_url
 
 
 def upload_photo_vk(vk_access_token, vk_api_version, filename):
-    with open (filename, 'rb') as file:
+    with open(filename, 'rb') as file:
         url = get_upload_url_vk(vk_access_token, vk_api_version)
         files = {'photo': file}
         response = requests.post(url, files=files)
@@ -58,7 +60,9 @@ def upload_photo_vk(vk_access_token, vk_api_version, filename):
 
 def saving_result_vk(vk_access_token, vk_api_version):
     vk_method = 'photos.saveWallPhoto'
-    vk_server, vk_photo, vk_hash = upload_photo_vk(vk_access_token, vk_api_version, filename)
+    vk_server, vk_photo, vk_hash = upload_photo_vk(
+        vk_access_token, vk_api_version, filename
+        )
     params = {'access_token': vk_access_token,
               'v': vk_api_version,
               'server': vk_server,
@@ -86,6 +90,7 @@ def posting_photo_vk(vk_access_token, vk_api_version):
 
 def deleted_local_file(filename):
     os.remove(filename)
+
 
 if __name__ == '__main__':
     load_dotenv()
