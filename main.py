@@ -74,13 +74,13 @@ def saving_result_vk(vk_access_token, vk_api_version, filename):
     return owner_id, photo_id
 
 
-def posting_photo_vk(vk_access_token, vk_api_version, filename):
+def posting_photo_vk(vk_access_token, vk_api_version, filename, vk_group_id):
     vk_method = 'wall.post'
     comment = get_request_random_xkcd()[1]
     owner_id, photo_id = saving_result_vk(
         vk_access_token, vk_api_version, filename
     )
-    vk_group_id = -215288801
+    vk_group_id = vk_group_id
     params = {'access_token': vk_access_token,
               'v': vk_api_version,
               'owner_id': vk_group_id,
@@ -98,8 +98,9 @@ if __name__ == '__main__':
     load_dotenv()
     filename = 'python.png'
     vk_api_version = 5.131
+    vk_group_id = os.environ['VK_GROUP_ID']
     vk_client_id = os.environ['VK_CLIENT_ID']
     vk_access_token = os.environ['VK_ACCESS_TOKEN']
     download_picture(filename)
-    posting_photo_vk(vk_access_token, vk_api_version, filename)
+    posting_photo_vk(vk_access_token, vk_api_version, filename, vk_group_id)
     deleted_local_file(filename)
