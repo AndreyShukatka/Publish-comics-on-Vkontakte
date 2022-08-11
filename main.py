@@ -58,7 +58,7 @@ def upload_photo_vk(vk_access_token, vk_api_version, filename):
         return vk_server, vk_photo, vk_hash
 
 
-def saving_result_vk(vk_access_token, vk_api_version):
+def saving_result_vk(vk_access_token, vk_api_version, filename):
     vk_method = 'photos.saveWallPhoto'
     vk_server, vk_photo, vk_hash = upload_photo_vk(
         vk_access_token, vk_api_version, filename
@@ -74,10 +74,12 @@ def saving_result_vk(vk_access_token, vk_api_version):
     return owner_id, photo_id
 
 
-def posting_photo_vk(vk_access_token, vk_api_version):
+def posting_photo_vk(vk_access_token, vk_api_version, filename):
     vk_method = 'wall.post'
     comment = get_request_random_xkcd()[1]
-    owner_id, photo_id = saving_result_vk(vk_access_token, vk_api_version)
+    owner_id, photo_id = saving_result_vk(
+        vk_access_token, vk_api_version, filename
+    )
     vk_group_id = -215288801
     params = {'access_token': vk_access_token,
               'v': vk_api_version,
@@ -99,5 +101,5 @@ if __name__ == '__main__':
     vk_client_id = os.environ['VK_CLIENT_ID']
     vk_access_token = os.environ['VK_ACCESS_TOKEN']
     download_picture(filename)
-    posting_photo_vk(vk_access_token, vk_api_version)
+    posting_photo_vk(vk_access_token, vk_api_version, filename)
     deleted_local_file(filename)
