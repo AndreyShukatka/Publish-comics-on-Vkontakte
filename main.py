@@ -20,12 +20,13 @@ def get_request_random_xkcd():
     return image_url, comment
 
 
-def download_picture(filename):
-    image_url = get_request_random_xkcd()[0]
+def download_picture_and_comment(filename):
+    image_url, comment = get_request_random_xkcd()
     response = requests.get(image_url)
     response.raise_for_status()
     with open(filename, 'wb') as file:
         file.write(response.content)
+    return comment
 
 
 def get_request_vk(vk_method, params):
@@ -45,7 +46,7 @@ def get_upload_url_vk(vk_access_token, vk_api_version):
     return vk_upload_url
 
 
-def upload_photo_vk(vk_access_token, vk_api_version, filename):
+def upload_vk_photo(vk_access_token, vk_api_version, filename):
     with open(filename, 'rb') as file:
         url = get_upload_url_vk(vk_access_token, vk_api_version)
         files = {'photo': file}
@@ -58,9 +59,9 @@ def upload_photo_vk(vk_access_token, vk_api_version, filename):
         return vk_server, vk_photo, vk_hash
 
 
-def saving_result_vk(vk_access_token, vk_api_version, filename):
+def save_vk_result(vk_access_token, vk_api_version, filename):
     vk_method = 'photos.saveWallPhoto'
-    vk_server, vk_photo, vk_hash = upload_photo_vk(
+    vk_server, vk_photo, vk_hash = upload_vk_photo(
         vk_access_token, vk_api_version, filename
         )
     params = {'access_token': vk_access_token,
@@ -74,10 +75,10 @@ def saving_result_vk(vk_access_token, vk_api_version, filename):
     return owner_id, photo_id
 
 
-def posting_photo_vk(vk_access_token, vk_api_version, filename, vk_group_id):
+def posting_vk_photo(vk_access_token, vk_api_version, filename, vk_group_id):
     vk_method = 'wall.post'
-    comment = get_request_random_xkcd()[1]
-    owner_id, photo_id = saving_result_vk(
+    comment = download_picture_and_comment(filename)
+    owner_id, photo_id = saving_vk_result(
         vk_access_token, vk_api_version, filename
     )
     vk_group_id = vk_group_id
@@ -101,6 +102,5 @@ if __name__ == '__main__':
     vk_group_id = os.environ['VK_GROUP_ID']
     vk_client_id = os.environ['VK_CLIENT_ID']
     vk_access_token = os.environ['VK_ACCESS_TOKEN']
-    download_picture(filename)
-    posting_photo_vk(vk_access_token, vk_api_version, filename, vk_group_id)
+    posting_vk_photo(vk_access_token, vk_api_version, filename, vk_group_id)
     deleted_local_file(filename)
