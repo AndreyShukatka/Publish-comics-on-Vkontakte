@@ -52,11 +52,11 @@ def upload_vk_photo(vk_access_token, vk_api_version, filename):
         files = {'photo': file}
         response = requests.post(url, files=files)
         response.raise_for_status()
-        upload_photo_response = response.json()
-        vk_server = upload_photo_response['server']
-        vk_photo = upload_photo_response['photo']
-        vk_hash = upload_photo_response['hash']
-        return vk_server, vk_photo, vk_hash
+    upload_photo_response = response.json()
+    vk_server = upload_photo_response['server']
+    vk_photo = upload_photo_response['photo']
+    vk_hash = upload_photo_response['hash']
+    return vk_server, vk_photo, vk_hash
 
 
 def save_vk_result(vk_access_token, vk_api_version, filename):
@@ -78,7 +78,7 @@ def save_vk_result(vk_access_token, vk_api_version, filename):
 def posting_vk_photo(vk_access_token, vk_api_version, filename, vk_group_id):
     vk_method = 'wall.post'
     comment = download_picture_and_comment(filename)
-    owner_id, photo_id = saving_vk_result(
+    owner_id, photo_id = save_vk_result(
         vk_access_token, vk_api_version, filename
     )
     vk_group_id = vk_group_id
