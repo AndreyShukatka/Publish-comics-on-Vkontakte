@@ -5,7 +5,7 @@ import requests
 from dotenv import load_dotenv
 
 
-def get_request_random_xkcd():
+def request_random_xkcd():
     last_comics_url = 'https://xkcd.com/info.0.json'
     last_comics_response = requests.get(last_comics_url)
     last_comics_response.raise_for_status()
@@ -20,35 +20,33 @@ def get_request_random_xkcd():
     return image_url, comment
 
 
-def download_picture_and_comment(filename):
-    image_url, comment = get_request_random_xkcd()
+def download_comics(filename, image_url):
     response = requests.get(image_url)
     response.raise_for_status()
     with open(filename, 'wb') as file:
         file.write(response.content)
-    return comment
 
 
-def get_request_vk(vk_method, params):
+def request_vk(vk_method, params):
     url = f'https://api.vk.com/method/{vk_method}'
     response = requests.get(url, params=params)
     response.raise_for_status()
     return response.json()
 
 
-def get_upload_url_vk(vk_access_token, vk_api_version):
+def get_upload_vk_url(vk_access_token, vk_api_version):
     vk_method = 'photos.getWallUploadServer'
     params = {
         'access_token': vk_access_token,
         'v': vk_api_version
         }
-    vk_upload_url = get_request_vk(vk_method, params)['response']['upload_url']
+    vk_upload_url = request_vk(vk_method, params)['response']['upload_url']
     return vk_upload_url
 
 
 def upload_vk_photo(vk_access_token, vk_api_version, filename):
     with open(filename, 'rb') as file:
-        url = get_upload_url_vk(vk_access_token, vk_api_version)
+        url = get_upload_vk_url(vk_access_token, vk_api_version)
         files = {'photo': file}
         response = requests.post(url, files=files)
         response.raise_for_status()
@@ -69,15 +67,14 @@ def save_vk_result(vk_access_token, vk_api_version, filename):
               'server': vk_server,
               'photo': vk_photo,
               'hash': vk_hash}
-    response = get_request_vk(vk_method, params)
+    response = request_vk(vk_method, params)
     owner_id = response['response'][0]['owner_id']
     photo_id = response['response'][0]['id']
     return owner_id, photo_id
 
 
-def posting_vk_photo(vk_access_token, vk_api_version, filename, vk_group_id):
+def posting_vk_photo(vk_access_token, vk_api_version, filename, vk_group_id, comment):
     vk_method = 'wall.post'
-    comment = download_picture_and_comment(filename)
     owner_id, photo_id = save_vk_result(
         vk_access_token, vk_api_version, filename
     )
@@ -87,7 +84,7 @@ def posting_vk_photo(vk_access_token, vk_api_version, filename, vk_group_id):
               'owner_id': vk_group_id,
               'message': comment,
               'attachments': f'photo{owner_id}_{photo_id}'}
-    response = get_request_vk(vk_method, params)
+    response = request_vk(vk_method, params)
     return response
 
 
@@ -102,5 +99,7 @@ if __name__ == '__main__':
     vk_group_id = os.environ['VK_GROUP_ID']
     vk_client_id = os.environ['VK_CLIENT_ID']
     vk_access_token = os.environ['VK_ACCESS_TOKEN']
-    posting_vk_photo(vk_access_token, vk_api_version, filename, vk_group_id)
+    image_url, comment = request_random_xkcd()
+    download_comics(filename, image_url)
+    posting_vk_photo(vk_access_token, vk_api_version, filename, vk_group_id, comment)
     deleted_local_file(filename)
