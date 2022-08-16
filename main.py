@@ -15,8 +15,9 @@ def request_random_xkcd():
     url = f'https://xkcd.com/{comics_number}/info.0.json'
     response = requests.get(url)
     response.raise_for_status()
-    image_url = response.json()['img']
-    comment = response.json()['alt']
+    response_data = response.json()
+    image_url = response_data['img']
+    comment = response_data['alt']
     return image_url, comment
 
 
