@@ -1,8 +1,18 @@
 import os
 import random
+import logging
 
 import requests
 from dotenv import load_dotenv
+
+
+class VK_API_Error(Exception):
+    pass
+
+
+def find_vk_api_error(response):
+    if 'error' in response:
+        raise VK_API_Error(response['error']['error_msg'])
 
 
 def request_random_xkcd():
@@ -31,8 +41,10 @@ def download_comics(filename, image_url):
 def request_vk(vk_method, params):
     url = f'https://api.vk.com/method/{vk_method}'
     response = requests.get(url, params=params)
+    response_data = response.json()
     response.raise_for_status()
-    return response.json()
+    find_vk_api_error(response_data)
+    return response_data
 
 
 def get_upload_vk_url(vk_access_token, vk_api_version):
@@ -51,6 +63,8 @@ def upload_vk_photo(vk_access_token, vk_api_version, filename):
         files = {'photo': file}
         response = requests.post(url, files=files)
         response.raise_for_status()
+        response_data = response.json()
+        find_vk_api_error(response_data)
     upload_photo_response = response.json()
     vk_server = upload_photo_response['server']
     vk_photo = upload_photo_response['photo']
@@ -100,7 +114,10 @@ if __name__ == '__main__':
     vk_group_id = os.environ['VK_GROUP_ID']
     vk_client_id = os.environ['VK_CLIENT_ID']
     vk_access_token = os.environ['VK_ACCESS_TOKEN']
-    image_url, comment = request_random_xkcd()
-    download_comics(filename, image_url)
-    posting_vk_photo(vk_access_token, vk_api_version, filename, vk_group_id, comment)
-    deleted_local_file(filename)
+    try:
+        image_url, comment = request_random_xkcd()
+        download_comics(filename, image_url)
+        posting_vk_photo(vk_access_token, vk_api_version, filename, vk_group_id, comment)
+        deleted_local_file(filename)
+    except VK_API_Error as VK_Error:
+        logging.error(VK_Error)
