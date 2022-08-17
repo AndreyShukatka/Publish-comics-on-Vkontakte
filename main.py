@@ -31,7 +31,7 @@ def request_random_xkcd():
     return image_url, comment
 
 
-def download_comics(filename, image_url):
+def download_comic(filename, image_url):
     response = requests.get(image_url)
     response.raise_for_status()
     with open(filename, 'wb') as file:
@@ -116,7 +116,7 @@ if __name__ == '__main__':
     vk_access_token = os.environ['VK_ACCESS_TOKEN']
     try:
         image_url, comment = request_random_xkcd()
-        download_comics(filename, image_url)
+        download_comic(filename, image_url)
         posting_vk_photo(vk_access_token, vk_api_version, filename, vk_group_id, comment)
         deleted_local_file(filename)
     except VK_API_Error as VK_Error:
