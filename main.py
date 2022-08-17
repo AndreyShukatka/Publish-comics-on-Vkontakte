@@ -88,7 +88,7 @@ def save_vk_result(vk_access_token, vk_api_version, filename):
     return owner_id, photo_id
 
 
-def posting_vk_photo(vk_access_token, vk_api_version, filename, vk_group_id, comment):
+def post_vk_photo(vk_access_token, vk_api_version, filename, vk_group_id, comment):
     vk_method = 'wall.post'
     owner_id, photo_id = save_vk_result(
         vk_access_token, vk_api_version, filename
@@ -113,7 +113,7 @@ if __name__ == '__main__':
     try:
         image_url, comment = request_random_xkcd()
         download_comic(filename, image_url)
-        posting_vk_photo(vk_access_token, vk_api_version, filename, vk_group_id, comment)
+        post_vk_photo(vk_access_token, vk_api_version, filename, vk_group_id, comment)
     except VK_API_Error as VK_Error:
         logging.error(VK_Error)
     finally:
