@@ -77,11 +77,13 @@ def save_vk_result(vk_access_token, vk_api_version, filename):
     vk_server, vk_photo, vk_hash = upload_vk_photo(
         vk_access_token, vk_api_version, filename
         )
-    params = {'access_token': vk_access_token,
-              'v': vk_api_version,
-              'server': vk_server,
-              'photo': vk_photo,
-              'hash': vk_hash}
+    params = {
+        'access_token': vk_access_token,
+        'v': vk_api_version,
+        'server': vk_server,
+        'photo': vk_photo,
+        'hash': vk_hash
+    }
     response = request_vk(vk_method, params)
     owner_id = response['response'][0]['owner_id']
     photo_id = response['response'][0]['id']
@@ -90,15 +92,16 @@ def save_vk_result(vk_access_token, vk_api_version, filename):
 
 def post_vk_photo(vk_access_token, vk_api_version, filename, vk_group_id, comment):
     vk_method = 'wall.post'
-    owner_id, photo_id = save_vk_result(
-        vk_access_token, vk_api_version, filename
-    )
+    owner_id, photo_id = \
+        save_vk_result(vk_access_token, vk_api_version, filename)
     vk_group_id = vk_group_id
-    params = {'access_token': vk_access_token,
-              'v': vk_api_version,
-              'owner_id': vk_group_id,
-              'message': comment,
-              'attachments': f'photo{owner_id}_{photo_id}'}
+    params = {
+        'access_token': vk_access_token,
+        'v': vk_api_version,
+        'owner_id': vk_group_id,
+        'message': comment,
+        'attachments': f'photo{owner_id}_{photo_id}'
+    }
     response = request_vk(vk_method, params)
     return response
 
