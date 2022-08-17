@@ -118,6 +118,7 @@ if __name__ == '__main__':
         image_url, comment = request_random_xkcd()
         download_comic(filename, image_url)
         posting_vk_photo(vk_access_token, vk_api_version, filename, vk_group_id, comment)
-        deleted_local_file(filename)
     except VK_API_Error as VK_Error:
         logging.error(VK_Error)
+    finally:
+        deleted_local_file(filename)
