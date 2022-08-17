@@ -62,9 +62,9 @@ def upload_vk_photo(vk_access_token, vk_api_version, filename):
         url = get_upload_vk_url(vk_access_token, vk_api_version)
         files = {'photo': file}
         response = requests.post(url, files=files)
-        response.raise_for_status()
-        response_data = response.json()
-        find_vk_api_error(response_data)
+    response.raise_for_status()
+    response_data = response.json()
+    find_vk_api_error(response_data)
     upload_photo_response = response.json()
     vk_server = upload_photo_response['server']
     vk_photo = upload_photo_response['photo']
