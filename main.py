@@ -52,7 +52,7 @@ def get_upload_vk_url(vk_access_token, vk_api_version):
     params = {
         'access_token': vk_access_token,
         'v': vk_api_version
-        }
+    }
     vk_upload_url = request_vk(vk_method, params)['response']['upload_url']
     return vk_upload_url
 
@@ -76,7 +76,7 @@ def save_vk_result(vk_access_token, vk_api_version, filename):
     vk_method = 'photos.saveWallPhoto'
     vk_server, vk_photo, vk_hash = upload_vk_photo(
         vk_access_token, vk_api_version, filename
-        )
+    )
     params = {
         'access_token': vk_access_token,
         'v': vk_api_version,
@@ -98,8 +98,11 @@ def post_vk_photo(
         comment
 ):
     vk_method = 'wall.post'
-    owner_id, photo_id = \
-        save_vk_result(vk_access_token, vk_api_version, filename)
+    owner_id, photo_id = save_vk_result(
+        vk_access_token,
+        vk_api_version,
+        filename
+    )
     vk_group_id = vk_group_id
     params = {
         'access_token': vk_access_token,
